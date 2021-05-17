@@ -1,0 +1,43 @@
+---
+title: Jarbird Gradle Plugin
+tags: main
+---
+
+<div class="home-container">
+
+<h1>title</h1>
+
+<blockquote class="blockquote">
+Setup publishing of Java/Kotlin components to Maven repository is a nuisance.
+<em>Jarbird</em> aims to keep the labour work of setting up component publishing to a minimum.
+Save large amount of boilerplate code for publishing components.
+</blockquote>
+
+<div style="margin: 1em 1em 0 0; display:flex; justify-content: flex-end; ">
+    <a href="/intro" class="button btn btn-primary">Getting Started</a>
+</div>
+
+<section id="getting-started">
+<nav>
+  <div class="nav nav-tabs" id="nav-tab" role="tablist">
+    <a class="nav-item nav-link active" id="nav-home-tab" data-toggle="tab" href="#nav-home"
+    role="tab" aria-controls="nav-home" aria-selected="true">Simple Setup</a>
+    <a class="nav-item nav-link" id="nav-profile-tab" data-toggle="tab" href="#nav-profile"
+    role="tab" aria-controls="nav-profile" aria-selected="false">Full Setup</a>
+  </div>
+</nav>
+<div class="tab-content" id="nav-tabContent">
+  <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
+    {%- for item in gettingStartedSimple %}
+    {% include "gettingStartedItem.njk" %}
+    {%- endfor %}
+  </div>
+  <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
+    {%- for item in gettingStartedFull%}
+    {% include "gettingStartedItem.njk" %}
+    {%- endfor %}
+  </div>
+</div>
+</section>
+
+</div>

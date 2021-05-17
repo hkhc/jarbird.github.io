@@ -1,0 +1,302 @@
+---
+title: Publishing Android Components
+tags: tutorial
+sidebar_label: Android Components
+sidebar_position: 5
+---
+In this tutorial, we are going to publish Android AAR library to Maven Central.
+
+The sample project is [here](https://github.
+com/hkhc/jarbird-samples/android).
+
+Unlike publishing  conventional JAR libraries, we need to take care of the
+**Build Types**, **Flavors**, and **Variants** of Android library projects.
+
+A variant is a combination of a build type and a flavor, so that it may refer
+to a combination of source set, resources, etc. For example, a typical Android project
+may have build types `debug` and `release`, and flavors for `qa` and
+`production`. Then we have four different variants:
+
+- `qaDebug`
+- `qaRelease`
+- `productionDebug`
+- `productionRelease`
+
+(We could ignore some combinations that do not make sense for particular
+project, please refer to `variantFilter` in [Android documentation](https://developer.android.com/studio/build/build-variants) for details)
+
+Each of the variants creates a different library and can be published
+(or not to be published) individually. Jarbird plugin supports configure
+how each of these components is published.
+
+The source code of this tutorial is in the `android` directory.
+
+### pom.yaml
+
+The `pom.yaml` file is not that different from conventional JAR publishing.
+The only difference right now is the `packaging` line.
+
+```yaml title="pom.yaml" {4}
+group: jarbirdsamples
+artifactId: simpleaar
+version: 1.0
+packaging: aar
+
+licenses:
+  - name: Apache-2.0
+    dist: repo
+
+developers:
+  - id: demo
+    name: Jarbird Demo
+    email: jarbird.demo@fake-email.com
+
+scm:
+  repoType: github.com
+  repoName: demo/jarbird-samples/android
+```
+
+### build.gradle
+
+We have a different plugin ID for Android project:
+
+<!--tabs-->
+# Groovy
+```groovy title="build.gradle" {4}
+plugins {
+    id 'com.android.library'
+    id 'kotlin-android'
+    id 'io.hkhc.jarbird-android' version "{{ jarbirdVersion }}"
+}
+```
+# Kotlin
+```kotlin title="build.gradle.kts" {4}
+plugins {
+    id("com.android.library")
+    id("kotlin-android")
+    id("io.hkhc.jarbird-android") version "{{ jarbirdVersion }}"
+}
+```
+<!--/tabs-->
+
+There is no new syntax and functions in the plugin `io.hkhc.jarbird-android`.
+It just has additional capability to recognize Android `LibraryVariant` objects.
+It does not hurt to use this plugin on conventional JAR projects. Just looks confusing.
+
+The build script of typical Android library projects has an android block
+to configure the build types and flavors. We add our code after the
+`android` block to specify how they are published, in the Jarbird way.
+
+<!--tabs-->
+# Groovy
+```groovy title="build.gradle" {4,8}
+// after android {}
+android.libraryVariants.configureEach { variant ->
+    jarbird {
+        pub(variant.name) {
+            mavenLocal()
+            mavenCentral()
+            useGpg = true
+            from(variant)
+        }
+    }
+}
+```
+# Kotlin
+```kotlin title="build.gradle.kts" {4,8}
+// after android {}
+android.libraryVariants.configureEach {
+    jarbird {
+        pub(name) {
+            mavenLocal()
+            mavenCentral()
+            useGpg = true
+            from(this@configureEach)
+        }
+    }
+}
+```
+<!--/tabs-->
+
+Note how Kotlin and Groovy differ in getting the proper reference to the `from()`
+method. Because of the `configureEach` loop, we created two `pub`s, one for
+each variant, and the results are two sets of artefacts.
+
+There are two things in the "jarbird" block that differs from our previous tutorials.
+First the additional `from()` block that we have mentioned. When building
+conventional JAR libraries, we normally don't need to specify where the source
+code comes from. The plugin will figure it out by itself. When publishing Android
+AAR components, we need to tell what to publish by passing the `LibraryVariant`
+reference to `from()` method.
+
+The other thing to notice is that we provided a name to `pub`.
+It is used to identify them when there are multiple `pub`.
+It could be any string as long as it is unique among `pub`s. Conventionally we
+use the variant name of the Android project.
+
+Normally Android library has at least two build types, `debug` and `release`.
+
+## Run It
+
+Executing `./gradlew jbPublishToMavenLocal` we get two publications:
+
+- `~/.m2/repository/jarbirdsamples/simpleaar/1.0-release`
+- `~/.m2/repository/jarbirdsamples/simpleaar/1.0-debug`
+
+The artifacts will look like:
+
+```shell-session
+ls -1 ~/.m2/repository/jarbirdsamples/simpleaar/1.0-release
+simpleaar-1.0-release-javadoc.jar
+simpleaar-1.0-release-javadoc.jar.asc
+simpleaar-1.0-release-sources.jar
+simpleaar-1.0-release-sources.jar.asc
+simpleaar-1.0-release.aar
+simpleaar-1.0-release.aar.asc
+simpleaar-1.0-release.module
+simpleaar-1.0-release.module.asc
+simpleaar-1.0-release.pom
+simpleaar-1.0-release.pom.asc
+```
+
+This is the default way to distinguish different publications, that the version
+is suffixed by the variant. However, we can change that.
+
+## Variant with artifactId
+
+We may make the variant part of the artifactId. We add one line to the Jarbird configuration:
+
+<!--tabs-->
+# Groovy
+```groovy title="build.gradle" {6}
+android.libraryVariants.configureEach { variant ->
+    jarbird {
+        pub(variant.name) {
+            mavenLocal()
+            mavenCentral()
+            variantWithArtifactId()
+            useGpg = true
+            from(variant)
+        }
+    }
+}
+```
+# Kotlin
+```kotlin title="build.gradle.kts" {6}
+android.libraryVariants.configureEach {
+    jarbird {
+        pub(name) {
+            mavenLocal()
+            mavenCentral()
+            variantWithArtifactId()
+            useGpg = true
+            from(this@configureEach)
+        }
+    }
+}
+```
+<!--/tabs-->
+
+The additional line indicates the artifactId shall be suffixed by the variant.
+After executing `jbPublishToMavenLocal`, we get two publications with
+directories like this:
+
+- `~/.m2/repository/jarbirdsamples/simpleaar-release/1.0`
+- `~/.m2/repository/jarbirdsamples/simpleaar-debug/1.0`
+
+We could have even greater control to the coordinate of components by specifying variant in `pom.yaml`
+
+## Variant with POM
+
+We may customize the POM information for each variant in `pom.xml`. There
+are two ways to do so. In this tutorial, we will focus on the one method first.
+
+Let's change the `pom.yaml` like this:
+
+```yaml title="pom.yaml" {1-6}
+variant: debug
+artifactId: simpleaar-staging
+---
+variant: release
+artifactId: simpleaar-production
+---
+group: jarbirdsamples
+version: 1.0
+packaging: aar
+
+licenses:
+  - name: Apache-2.0
+    dist: repo
+
+developers:
+  - id: demo
+    name: Jarbird Demo
+    email: jarbird.demo@fake-email.com
+
+scm:
+  repoType: github.com
+  repoName: demo/jarbird-samples/android
+```
+
+Now our `pom.yaml` has three sections, two of them have a `variant` attribute.
+When publishing components, Jarbird plugin **combine the section in `pom.yaml`
+with `variant` attribute and the section without `variant`.** Therefore
+effectively we have different `pom.yaml` for each of the variants.
+
+Then we add a line to the `build.gradle` file.
+
+<!--tabs-->
+# Groovy
+```groovy title="build.gradle" {6}
+android.libraryVariants.configureEach { variant ->
+    jarbird {
+        pub(variant.name) {
+            mavenLocal()
+            mavenCentral()
+            variantInvisible()
+            useGpg = true
+            from(variant)
+        }
+    }
+}
+```
+# Kotlin
+```kotlin title="build.gradle.kts" {6}
+android.libraryVariants.configureEach {
+    jarbird {
+        pub(name) {
+            mavenLocal()
+            mavenCentral()
+            variantInvisible()
+            useGpg = true
+            from(this@configureEach)
+        }
+    }
+}
+```
+<!--/tabs-->
+
+The line `variantInvisible()` tell Jarbird plugin not to merge the variant name.
+So the information of components we built is entirely on `pom.yaml`.
+
+Executing `./gradlew jbPublishToMavenLocal` and we will get the following in
+Maven Local repository:
+
+- `~/.m2/repository/jarbirdsamples/simpleaar-production/1.0`
+- `~/.m2/repository/jarbirdsamples/simpleaar-staging/1.0`
+
+The artifacts of the release variant look like this:
+
+```shell-session
+$ ls -1 ~/.m2/repository/jarbirdsamples/simpleaar-production/1.0
+simpleaar-production-1.0-javadoc.jar
+simpleaar-production-1.0-javadoc.jar.asc
+simpleaar-production-1.0-sources.jar
+simpleaar-production-1.0-sources.jar.asc
+simpleaar-production-1.0.aar
+simpleaar-production-1.0.aar.asc
+simpleaar-production-1.0.module
+simpleaar-production-1.0.module.asc
+simpleaar-production-1.0.pom
+simpleaar-production-1.0.pom.asc
+```
