@@ -3,13 +3,13 @@ const path = require('path');
 module.exports = {
   title: 'Jarbird Gradle Plugin',
   tagline: 'Publishing Java components made easy',
-  url: 'https://your-docusaurus-test-site.com',
-  baseUrl: '/',
+  url: 'https://hkhc.github.io',
+  baseUrl: '/jarbird',
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
   favicon: 'img/favicon.ico',
   organizationName: 'hkhc', // Usually your GitHub org/user name.
-  projectName: 'jarbird-docs', // Usually your repo name.
+  projectName: 'jarbird', // Usually your repo name.
   customFields: {
     image: '',
     keywords: [],
@@ -68,7 +68,7 @@ module.exports = {
           items: [
             {
               label: 'Tutorial',
-              to: 'tutorials',
+              to: 'docs/tutorials/index',
             },
           ],
         },
@@ -78,6 +78,10 @@ module.exports = {
             {
               label: 'GitHub',
               href: 'https://github.com/hkhc/jarbird',
+            },
+            {
+              label: 'Sample Code',
+              href: 'https://github.com/hkhc/jarbird-samples',
             },
           ],
         },
