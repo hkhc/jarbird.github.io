@@ -35,3 +35,8 @@ do it in the good old way.
 
 Let's get start from [Tutorial](tutorials/index)
 
+## What's new
+
+### 0.5.2
+- Generate Maven Central compliant POM for Gradle plugin publishing
+- Handle "new" Maven Central account created after Feb, 2021

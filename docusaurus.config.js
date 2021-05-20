@@ -4,7 +4,7 @@ module.exports = {
   title: 'Jarbird Gradle Plugin',
   tagline: 'Publishing Java components made easy',
   url: 'https://hkhc.github.io',
-  baseUrl: '/jarbird',
+  baseUrl: '/jarbird/',
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
   favicon: 'img/favicon.ico',
