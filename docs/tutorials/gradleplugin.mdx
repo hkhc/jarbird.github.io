@@ -29,7 +29,7 @@ An account is needed to publish to [Gradle Plugin Portal](https://plugins.gradle
 
 Beside the usual information, we added one more section for Gradle plugin:
 
-```yaml title="pom.yaml" {6-9}
+```yaml title="pom.yaml" {6-11}
 group: jarbirdsamples
 artifactId: gradleplugin
 version: 1.0
@@ -39,6 +39,8 @@ plugin:
   id: jarbirdsamples.plugin
   displayName: Demo of simple Gradle Plugin
   implementationClass: simplelib.SimplePlugin
+  tags:
+    - publish
 ```
 
 From remote repository perspective, a Gradle plugin consists of two

@@ -13,7 +13,7 @@ module.exports = {
   customFields: {
     image: '',
     keywords: [],
-    jarbirdVersion: "0.5.2",
+    jarbirdVersion: "0.5.3",
   },
   themeConfig: {
     navbar: {
