@@ -32,7 +32,7 @@ const evaluate = (text, dict, fence, quietOnNotFound) => {
             } else { // end fence is found. lookup the dict with key and append value to result
                 let key = text.slice(currIndex, keyIndex).trim();
                 let value = dict[key];
-                result += value ? value : (quietOnNotFound ? '' : valueNotFoundMessage(value));
+                result += value ? value : (quietOnNotFound ? '' : valueNotFoundMessage(key));
                 currIndex = keyIndex + fence[1].length;
                 inFence = false;
             }

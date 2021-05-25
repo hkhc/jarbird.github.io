@@ -70,18 +70,22 @@ module.exports = {
               label: 'Tutorial',
               to: 'docs/tutorials/index',
             },
+            {
+              label: 'Sample Code',
+              href: 'https://github.com/hkhc/jarbird-samples',
+            },
           ],
         },
         {
           title: 'More',
           items: [
             {
-              label: 'GitHub',
-              href: 'https://github.com/hkhc/jarbird',
+              label: 'HKHC',
+              href: 'https://hkhc.github.io',
             },
             {
-              label: 'Sample Code',
-              href: 'https://github.com/hkhc/jarbird-samples',
+              label: 'GitHub',
+              href: 'https://github.com/hkhc',
             },
           ],
         },

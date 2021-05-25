@@ -1,0 +1,117 @@
+---
+title: Publish to custom Maven repositories
+tags: tutorial
+sidebar_label: Custom Maven repository
+sidebar_position: 5
+---
+In this tutorial we will go through the process of publishing to a custom 
+maven repository.
+
+The sample project is [here](https://github.
+com/hkhc/jarbird-samples/tree/master/custommaven).
+
+Assume that you have access to your own SonaType server, have the URLs to 
+publish component and have username and password of your account.
+
+## Project setup
+
+### gradle.properties
+
+Add maven server information to `gradle.properties`. We can have multiple maven 
+server settings in one `gradle.properties` file. Each of the settings is 
+identified by an ID. ("demo" in the example below.)
+
+```properties title="~/.gradle/gradle.properties"
+# ...
+repository.maven.demo.release=......
+repository.maven.demo.snapshot=......
+repository.maven.demo.username=........
+repository.maven.demo.password=........
+# ...
+```
+
+We need to provide a URL for release version of component, a URL for 
+snapshot version of component, username and password of your account.
+
+### build.gradle
+
+Tell Jarbird plugin that we want to publish to a custom Maven repository. We 
+specify the ID of our Maven repository setting in `gradle.properties`.
+
+<!--tabs-->
+# Groovy
+```groovy title="build.gradle" {5}
+// ...
+jarbird {
+    pub {
+        mavenRepo("demo")
+        useGpg = true
+    }
+}
+// ...
+```
+# Kotlin
+```kotlin title="build.gradle.kts" {5}
+// ...
+jarbird {
+    pub {
+        mavenRepo("demo")
+        useGpg = true
+    }
+}
+// ...
+```
+<!--/tabs-->
+
+`mavenLocal()` can be omitted if you are not going to publish to Maven Local repository.
+
+### pom.yaml
+
+Unlike MavenCentral, we may skip some details in pom.xml. Jarbird get all of 
+those at the `pom.yaml` file:
+
+``` yaml title="pom.yaml"
+group: jarbirdsamples
+artifactId: mevendemo
+version: 1.0
+packaging: jar
+
+licenses:
+  - name: Apache-2.0
+    dist: repo
+
+developers:
+  - id: demo
+    name: Jarbird Demo
+    email: jarbird.demo@fake-email.com
+
+scm:
+  repoType: github.com
+  repoName: demo/jarbird-samples/maven-demo
+
+```
+
+See TODO for more details about the content of `pom.yaml`.
+
+Jarbird plugin read the file and create proper POM file for publishing automatically.
+
+With this setup, we can see more tasks available with `./gradlew tasks`
+
+```text
+Jarbird publishing tasks
+------------------------
+jbPublish - Publish
+jbPublishCustommaven - Publish module 'custommaven' to all targeted repositories
+jbPublishCustommavenToMavenDemo - Publish module 'custommaven' to Maven repository 'demo'
+jbPublishCustommavenToMavenLocal - Publish module 'custommaven' to Maven Local repository
+jbPublishCustommavenToMavenRepository - Publish module 'custommaven' to all Maven repositories
+jbPublishToMavenDemo - Publish to Maven repository 'demo'
+jbPublishToMavenLocal - Publish to Maven Local repository
+jbPublishToMavenRepository - Publish to all Maven repositories
+```
+
+The task `jbPublish` publishes component to all specified repositories,
+which is MavenLocal and MavenCentral for this sample.
+We may use `jbPublishToMavenDemo`  to publish all of our components to the 
+"demo" Maven repository. 
+
