@@ -142,24 +142,24 @@ To get rid of the warning, we may tell Jarbird explicitly that we want to use
 keybox file. This can be done by updating the `build.gradle` file.
 
 <!--tabs-->
-# Groovy
-```groovy title="build.gradle" {5}
+# build.gradle
+```groovy {5}
 // ...
 jarbird {
     pub {
         mavenLocal()
-        useGpg = true
+        signWithKeybox()
     }
 }
 // ...
 ```
-# Kotlin
-```kotlin title="build.gradle.kts" {5}
+# build.gradle.kts
+```kotlin {5}
 // ...
 jarbird {
     pub {
         mavenLocal()
-        useGpg = true
+        signWithKeybox()
     }
 }
 // ...

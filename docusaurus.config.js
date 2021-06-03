@@ -13,7 +13,7 @@ module.exports = {
   customFields: {
     image: '',
     keywords: [],
-    jarbirdVersion: "0.5.3",
+    jarbirdVersion: "0.5.4",
   },
   themeConfig: {
     navbar: {
@@ -37,7 +37,7 @@ module.exports = {
         },
         {
           type: 'doc',
-          docId: 'reference',
+          docId: 'reference/index',
           position: 'left',
           label: 'Reference',
         },
@@ -110,7 +110,7 @@ module.exports = {
           remarkPlugins: [
             [require(path.resolve(__dirname, './src/remarkPlugins/hkhc-remake-variables')), {
               dict: {
-                'jarbirdVersion': '0.5.2'
+                'jarbirdVersion': '0.6.0'
               }
             }],
             require('remark-docusaurus-tabs')

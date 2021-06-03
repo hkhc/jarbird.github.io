@@ -64,26 +64,22 @@ plugin. So we don't need to configure repository in `pluginManagement` of
 `settings.gradle` to make the plugin accessible.
 
 <!--tabs-->
-# Groovy
-```groovy title="build.gradle" {5}
+# build.gradle
+```groovy {5}
 // ...
 jarbird {
     pub {
-        mavenLocal()
         gradlePortal()
-        useGpg = true
     }
 }
 // ...
 ```
-# Kotlin
-```kotlin title="build.gradle.kts" {5}
+# build.gradle.kts
+```kotlin {5}
 // ...
 jarbird {
     pub {
-        mavenLocal()
         gradlePortal()
-        useGpg = true
     }
 }
 // ...

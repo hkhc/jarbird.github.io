@@ -44,16 +44,16 @@ not be signed, which save us some effort to make our minimal component works.
 The next thing is our familiar `build.gradle`. First we have the plugin declaration at the top of file.
 
 <!--tabs-->
-# Groovy
-```groovy title="build.gradle"
+# build.gradle
+```groovy
 plugins {
     id 'java'
     id 'io.hkhc.jarbird' version '{{jarbirdVersion}}'
 }
 // ...
 ```
-# Kotlin
-```kotlin title="build.gradle.kts"
+# build.gradle.kts
+```kotlin
 plugins {
     id("java")
     id("io.hkhc.jarbird") version "{{jarbirdVersion}}"
@@ -69,8 +69,8 @@ The last bit we need is to tell Jarbird plugin that we publish our component
 to Maven Local repository.
 
 <!--tabs-->
-# Groovy
-```groovy title="build.gradle"
+# build.gradle
+```groovy 
 // ...
 jarbird {
     pub {
@@ -79,8 +79,8 @@ jarbird {
 }
 // ...
 ```
-# Kotlin
-```kotlin title="build.gradle.kts"
+# build.gradle.kts
+```kotlin 
 // ...
 jarbird {
     pub {
@@ -158,8 +158,8 @@ So we have the Jar file itself, archive of source code, archive of javadoc, POM 
 We could use the component in other projects of the same computer, by adding this line to the `build.gradle` of these projects:
 
 <!--tabs-->
-# Groovy
-```groovy title="build.gradle"
+# build.gradle
+```groovy 
 buildscript {
     mavenLocal()
     // ... other repositories
@@ -169,8 +169,8 @@ dependencies {
     // ... other dependencies
 }
 ```
-# Kotlin
-```kotlin title="build.gradle.kts"
+# build.gradle.kts
+```kotlin 
 buildscript {
     mavenLocal()
     // ... other repositories

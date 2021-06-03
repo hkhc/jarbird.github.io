@@ -7,11 +7,12 @@ sidebar_position: 5
 In this tutorial we will go through the process of publishing to a custom 
 maven repository.
 
-The sample project is [here](https://github.
-com/hkhc/jarbird-samples/tree/master/custommaven).
+The sample project is [here](https://github.com/hkhc/jarbird-samples/tree/master/custommaven).
 
-Assume that you have access to your own SonaType server, have the URLs to 
-publish component and have username and password of your account.
+You need access to your own repository manager server. For learning purpose you 
+may [setup](#reposilite) a simple repository manager server on your local 
+computer to try. There are a lot of open source and commercial [solutions](https://maven.apache.org/repository-management.html) for 
+that, pick one you like.
 
 ## Project setup
 
@@ -19,16 +20,24 @@ publish component and have username and password of your account.
 
 Add maven server information to `gradle.properties`. We can have multiple maven 
 server settings in one `gradle.properties` file. Each of the settings is 
-identified by an ID. ("demo" in the example below.)
+identified by an ID. ("demo" in the example below.). 
 
 ```properties title="~/.gradle/gradle.properties"
 # ...
-repository.maven.demo.release=......
-repository.maven.demo.snapshot=......
-repository.maven.demo.username=........
-repository.maven.demo.password=........
+repository.maven.demo.release=http://localhost
+repository.maven.demo.snapshot=http://localhost
+repository.maven.demo.username=writeuser
+repository.maven.demo.password=....token....
+# The following line is needed only if release or snapshot URL are HTTP.
+repository.maven.demo.allowInsecureProtocol=true
 # ...
 ```
+
+The last line is an opt-in step to allow Jarbird plugin to use insecure 
+server, to allow release and snapshot URL to be HTTP rather than HTTPS.
+
+If you are using Rosilite server as the [setup](#rosilite), fill in the 
+token for user `writeuser` to `~/.gradle/gradle.properties`.
 
 We need to provide a URL for release version of component, a URL for 
 snapshot version of component, username and password of your account.
@@ -39,24 +48,22 @@ Tell Jarbird plugin that we want to publish to a custom Maven repository. We
 specify the ID of our Maven repository setting in `gradle.properties`.
 
 <!--tabs-->
-# Groovy
-```groovy title="build.gradle" {5}
+# build.gradle
+```groovy {5}
 // ...
 jarbird {
     pub {
         mavenRepo("demo")
-        useGpg = true
     }
 }
 // ...
 ```
-# Kotlin
-```kotlin title="build.gradle.kts" {5}
+# build.gradle.kts
+```kotlin {5}
 // ...
 jarbird {
     pub {
         mavenRepo("demo")
-        useGpg = true
     }
 }
 // ...
@@ -115,3 +122,36 @@ which is MavenLocal and MavenCentral for this sample.
 We may use `jbPublishToMavenDemo`  to publish all of our components to the 
 "demo" Maven repository. 
 
+If you are using Rosilite server locally, you can observe the publishing 
+activities at the console window of Rosilite, and find the published files 
+at `repositories`
+
+### Appendix: Setup Reposilite server
+
+[Reposilite](https://reposilite.com/) is a simple, open-source Maven 
+repository manager server. It can be set up in minutes on your local 
+computer, which is ideal to learn about how Jarbird works with custom Maven 
+repositories.
+
+Assumed that you have an ordinary JDK (8+) installed on your computer.
+
+#### Download the binary
+
+Download the jar [here](https://github.com/dzikoysk/reposilite/releases). At 
+the time of writing, the latest version is 2.9.22. Create a directory 
+locally, and place the jar file there.
+
+#### Start server
+
+Start the server with `java -jar rosilite-2.9.22.jar`
+
+After it has finished start up, we may type command in the command shell 
+window directly.
+
+#### Create users and tokens
+
+- Type `keygen / adminuser m`, note the token generated. If you missed that, 
+  you may find it in the file `tokens.dat` in the same directory.
+- Type `keygen / writeuser w`, note the token generated.   
+
+#### Done!

@@ -48,26 +48,22 @@ Default is `true`.
 Tell Jarbird plugin that we want to publish to Maven Central.
 
 <!--tabs-->
-# Groovy
-```groovy title="build.gradle" {5}
+# build.gradle
+```groovy {5}
 // ...
 jarbird {
     pub {
-        mavenLocal()
         mavenCentral()
-        useGpg = true
     }
 }
 // ...
 ```
-# Kotlin
-```kotlin title="build.gradle.kts" {5}
+# build.gradle.kts
+```kotlin {5}
 // ...
 jarbird {
     pub {
-        mavenLocal()
         mavenCentral()
-        useGpg = true
     }
 }
 // ...
@@ -85,6 +81,9 @@ approved to be published. This information includes:
 - Description
 - URL that host the source code
 - Developer's information.
+
+Refer to Sonatype [page](https://central.sonatype.org/pages/requirements.html#sufficient-metadata) 
+for detail requirements of POM to publish component to Maven Central.
 
 Jarbird get all of those at the `pom.yaml` file:
 

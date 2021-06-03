@@ -61,16 +61,16 @@ scm:
 We have a different plugin ID for Android project:
 
 <!--tabs-->
-# Groovy
-```groovy title="build.gradle" {4}
+# build.gradle
+```groovy {4}
 plugins {
     id 'com.android.library'
     id 'kotlin-android'
     id 'io.hkhc.jarbird-android' version "{{ jarbirdVersion }}"
 }
 ```
-# Kotlin
-```kotlin title="build.gradle.kts" {4}
+# build.gradle.kts
+```kotlin {4}
 plugins {
     id("com.android.library")
     id("kotlin-android")
@@ -88,29 +88,25 @@ to configure the build types and flavors. We add our code after the
 `android` block to specify how they are published, in the Jarbird way.
 
 <!--tabs-->
-# Groovy
-```groovy title="build.gradle" {4,8}
+# build.gradle
+```groovy {4,8}
 // after android {}
 android.libraryVariants.configureEach { variant ->
     jarbird {
         pub(variant.name) {
-            mavenLocal()
             mavenCentral()
-            useGpg = true
             from(variant)
         }
     }
 }
 ```
-# Kotlin
-```kotlin title="build.gradle.kts" {4,8}
+# build.gradle.kts
+```kotlin {4,8}
 // after android {}
 android.libraryVariants.configureEach {
     jarbird {
         pub(name) {
-            mavenLocal()
             mavenCentral()
-            useGpg = true
             from(this@configureEach)
         }
     }
@@ -167,29 +163,25 @@ is suffixed by the variant. However, we can change that.
 We may make the variant part of the artifactId. We add one line to the Jarbird configuration:
 
 <!--tabs-->
-# Groovy
-```groovy title="build.gradle" {6}
+# build.gradle
+```groovy {6}
 android.libraryVariants.configureEach { variant ->
     jarbird {
         pub(variant.name) {
-            mavenLocal()
             mavenCentral()
             variantWithArtifactId()
-            useGpg = true
             from(variant)
         }
     }
 }
 ```
-# Kotlin
-```kotlin title="build.gradle.kts" {6}
+# build.gradle.kts
+```kotlin {6}
 android.libraryVariants.configureEach {
     jarbird {
         pub(name) {
-            mavenLocal()
             mavenCentral()
             variantWithArtifactId()
-            useGpg = true
             from(this@configureEach)
         }
     }
@@ -246,29 +238,25 @@ effectively we have different `pom.yaml` for each of the variants.
 Then we add a line to the `build.gradle` file.
 
 <!--tabs-->
-# Groovy
-```groovy title="build.gradle" {6}
+# build.gradle
+```groovy {6}
 android.libraryVariants.configureEach { variant ->
     jarbird {
         pub(variant.name) {
-            mavenLocal()
             mavenCentral()
             variantInvisible()
-            useGpg = true
             from(variant)
         }
     }
 }
 ```
-# Kotlin
-```kotlin title="build.gradle.kts" {6}
+# build.gradle.kts
+```kotlin {6}
 android.libraryVariants.configureEach {
     jarbird {
         pub(name) {
-            mavenLocal()
             mavenCentral()
             variantInvisible()
-            useGpg = true
             from(this@configureEach)
         }
     }
