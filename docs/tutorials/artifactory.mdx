@@ -4,23 +4,19 @@ tags: tutorial
 sidebar_label: Custom Artifactory repository
 sidebar_position: 7
 ---
-In this tutorial we will go through the process of publishing to a custom 
+In this tutorial, we will go through the process of publishing to a custom
 Artifactory repository.
 
-The sample project is [here](https://github.
-com/hkhc/jarbird-samples/tree/master/artifactory).
+The sample project is [here](https://github.com/hkhc/jarbird-samples/tree/master/artifactory).
 
-You need access to your own Artifactory server. For learning purpose you 
-may get an open source version of [JFrog artifactory server](https://jfrog.com/open-source/) 
-on your local computer to try. 
+You need access to your Artifactory server. For learning purpose you
+may get an open-source version of [JFrog artifactory server](https://jfrog.com/open-source/) on your local computer to try.
 
 ## Project setup
 
 ### gradle.properties
 
-Add Artifactory server information to `gradle.properties`. We can have multiple 
-Artifactory server settings in one `gradle.properties` file. Each of the settings is 
-identified by an ID. ("demo" in the example below.). 
+Add Artifactory server information to `gradle.properties`. We can have multiple Artifactory server settings in one `gradle.properties` file. Each of the settings is identified by an ID. ("demo" in the example below.). However, we can only use one Artifactory repository for each sub-project.
 
 ```properties title="~/.gradle/gradle.properties"
 # ...
@@ -32,18 +28,15 @@ repository.artifactory.demo.password=....token....
 # ...
 ```
 
-We need to provide a URL for release version of component, a URL for 
-snapshot version of component, username and password of your account, and 
-the repoKey that represent a particular repository in the Artifactory server.
+We need to provide a URL for the release version of the component, a URL for the snapshot version of the component, username and password of your account, and the `repoKey` that represent a particular repository in the Artifactory server.
 
 ### build.gradle
 
-Tell Jarbird plugin that we want to publish to a custom Artifactory repository.
-We specify the ID of our Artifactory repository setting in `gradle.properties`.
+Tell Jarbird plugin that we want to publish to a custom Artifactory repository. We specify the ID of our Artifactory repository setting in `gradle.properties`.
 
 <!--tabs-->
 # build.gradle
-```groovy {5}
+```groovy {4}
 // ...
 jarbird {
     pub {
@@ -53,7 +46,7 @@ jarbird {
 // ...
 ```
 # build.gradle.kts
-```kotlin {5}
+```kotlin {4}
 // ...
 jarbird {
     pub {
@@ -64,11 +57,9 @@ jarbird {
 ```
 <!--/tabs-->
 
-`mavenLocal()` can be omitted if you are not going to publish to Maven Local repository.
+See [reference](../reference/pom) for more details about the content of `pom.yaml`.
 
-See [here](../reference/pom) for more details about the content of `pom.yaml`.
-
-Jarbird plugin read the file and create proper POM file for publishing automatically.
+Jarbird plugin read the file and create a proper POM file for publishing automatically.
 
 With this setup, we can see more tasks available with `./gradlew tasks`
 
@@ -82,8 +73,4 @@ jbPublishToArtifactory - Publish jarbirdsamples:customartifactory:1.0 to Artifac
 jbPublishToMavenLocal - Publish to Maven Local repository
 ```
 
-The task `jbPublish` publishes component to all specified repositories,
-which is MavenLocal and MavenCentral for this sample.
-We may use `jbPublishToArtifactory`  to publish all of our components to the 
-"demo" Maven repository. 
-
+The task `jbPublish` publishes component to all specified repositories, which is MavenLocal and MavenCentral for this sample. We may use `jbPublishToArtifactory`  to publish all of our components to the "demo" Maven repository. 

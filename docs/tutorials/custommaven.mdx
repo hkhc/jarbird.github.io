@@ -4,23 +4,18 @@ tags: tutorial
 sidebar_label: Custom Maven repository
 sidebar_position: 5
 ---
-In this tutorial we will go through the process of publishing to a custom 
+In this tutorial, we will go through the process of publishing to a custom
 maven repository.
 
 The sample project is [here](https://github.com/hkhc/jarbird-samples/tree/master/custommaven).
 
-You need access to your own repository manager server. For learning purpose you 
-may [setup](#reposilite) a simple repository manager server on your local 
-computer to try. There are a lot of open source and commercial [solutions](https://maven.apache.org/repository-management.html) for 
-that, pick one you like.
+You need access to your own repository manager server. For learning purpose, you may [setup](#reposilite) a simple repository manager server on your local computer to try. There are a lot of open-source and commercial [solutions](https://maven.apache.org/repository-management.html) for that, pick the one you like.
 
 ## Project setup
 
 ### gradle.properties
 
-Add maven server information to `gradle.properties`. We can have multiple maven 
-server settings in one `gradle.properties` file. Each of the settings is 
-identified by an ID. ("demo" in the example below.). 
+Add maven server information to `gradle.properties`. We can have multiple maven server settings in one `gradle.properties` file. Each of the settings is identified by an ID. ("demo" in the example below.).
 
 ```properties title="~/.gradle/gradle.properties"
 # ...
@@ -33,19 +28,17 @@ repository.maven.demo.allowInsecureProtocol=true
 # ...
 ```
 
-The last line is an opt-in step to allow Jarbird plugin to use insecure 
+The last line is an opt-in step to allow the Jarbird plugin to use insecure
 server, to allow release and snapshot URL to be HTTP rather than HTTPS.
 
-If you are using Rosilite server as the [setup](#rosilite), fill in the 
+If you are using Rosilite server as the [setup](#rosilite), fill in the
 token for user `writeuser` to `~/.gradle/gradle.properties`.
 
-We need to provide a URL for release version of component, a URL for 
-snapshot version of component, username and password of your account.
+We need to provide a URL for the release version of the component, a URL for the snapshot version of the component, username and password of your account.
 
 ### build.gradle
 
-Tell Jarbird plugin that we want to publish to a custom Maven repository. We 
-specify the ID of our Maven repository setting in `gradle.properties`.
+Tell Jarbird plugin that we want to publish to a custom Maven repository. We specify the ID of our Maven repository setting in `gradle.properties`.
 
 <!--tabs-->
 # build.gradle
@@ -70,12 +63,11 @@ jarbird {
 ```
 <!--/tabs-->
 
-`mavenLocal()` can be omitted if you are not going to publish to Maven Local repository.
+The parameter of `mavenRepo()` is the ID of the repository that we used to specify details in `gradle.properties`
 
 ### pom.yaml
 
-Unlike MavenCentral, we may skip some details in pom.xml. Jarbird get all of 
-those at the `pom.yaml` file:
+Unlike MavenCentral, which need full POM information for proper publishing. We may skip some details in pom.xml for our custom repository. Jarbird gets all of those at the `pom.yaml` file:
 
 ``` yaml title="pom.yaml"
 group: jarbirdsamples
@@ -95,12 +87,11 @@ developers:
 scm:
   repoType: github.com
   repoName: demo/jarbird-samples/maven-demo
-
 ```
 
-See TODO for more details about the content of `pom.yaml`.
+See [reference](../reference/pom) for more details about the content of `pom.yaml`.
 
-Jarbird plugin read the file and create proper POM file for publishing automatically.
+Jarbird plugin read the file and create a proper POM file for publishing automatically.
 
 With this setup, we can see more tasks available with `./gradlew tasks`
 
@@ -111,47 +102,35 @@ jbPublish - Publish
 jbPublishCustommaven - Publish module 'custommaven' to all targeted repositories
 jbPublishCustommavenToMavenDemo - Publish module 'custommaven' to Maven repository 'demo'
 jbPublishCustommavenToMavenLocal - Publish module 'custommaven' to Maven Local repository
-jbPublishCustommavenToMavenRepository - Publish module 'custommaven' to all Maven repositories
+jbPublishCustommavenToMavenRepositories - Publish module 'custommaven' to all Maven repositories
 jbPublishToMavenDemo - Publish to Maven repository 'demo'
 jbPublishToMavenLocal - Publish to Maven Local repository
-jbPublishToMavenRepository - Publish to all Maven repositories
+jbPublishToMavenRepositories - Publish to all Maven repositories
 ```
 
-The task `jbPublish` publishes component to all specified repositories,
-which is MavenLocal and MavenCentral for this sample.
-We may use `jbPublishToMavenDemo`  to publish all of our components to the 
-"demo" Maven repository. 
+The task `jbPublish` publishes component to all specified repositories, which is MavenLocal and MavenCentral for this sample. We may use `jbPublishToMavenDemo`  to publish all of our components to the "demo" Maven repository.
 
-If you are using Rosilite server locally, you can observe the publishing 
-activities at the console window of Rosilite, and find the published files 
-at `repositories`
+If you are using the Rosilite server locally, you can observe the publishing activities at the console window of Rosilite, and find the published files at `repositories`
 
-### Appendix: Setup Reposilite server
+## Appendix: Setup Reposilite server
 
-[Reposilite](https://reposilite.com/) is a simple, open-source Maven 
-repository manager server. It can be set up in minutes on your local 
-computer, which is ideal to learn about how Jarbird works with custom Maven 
-repositories.
+[Reposilite](https://reposilite.com/) is a simple, open-source Maven repository manager server. It can be set up in minutes on your local computer, which is ideal to learn about how Jarbird works with custom Maven repositories.
 
 Assumed that you have an ordinary JDK (8+) installed on your computer.
 
-#### Download the binary
+### Download the binary
 
-Download the jar [here](https://github.com/dzikoysk/reposilite/releases). At 
-the time of writing, the latest version is 2.9.22. Create a directory 
-locally, and place the jar file there.
+Download the jar [here](https://github.com/dzikoysk/reposilite/releases). At the time of writing, the latest version is 2.9.22. Create a directory locally, and place the jar file there.
 
-#### Start server
+### Start server
 
 Start the server with `java -jar rosilite-2.9.22.jar`
 
-After it has finished start up, we may type command in the command shell 
-window directly.
+After it has finished starting up, we may type the command in the command shell window directly.
 
-#### Create users and tokens
+### Create users and tokens
 
-- Type `keygen / adminuser m`, note the token generated. If you missed that, 
-  you may find it in the file `tokens.dat` in the same directory.
-- Type `keygen / writeuser w`, note the token generated.   
+- Type `keygen / adminuser m`, note the token generated. If you missed that, you may find it in the file `tokens.dat` in the same directory.
+- Type `keygen / writeuser w`, note the token generated.
 
-#### Done!
+### Done!

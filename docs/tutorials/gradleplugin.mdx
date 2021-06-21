@@ -5,21 +5,15 @@ sidebar_label: Gradle Plugin
 sidebar_position: 7
 ---
 
-We have build different type of libraries with Gradle. This time we are going
-to build Gradle Plugin wirth Jarbird.
+We have built different types of libraries with Gradle. This time we are going to build Gradle Plugin with Jarbird.
 
-The sample project is [here](https://github.
-com/hkhc/jarbird-samples/tree/master/gradleplugin)
+The sample project is [here](https://github.com/hkhc/jarbird-samples/tree/master/gradleplugin)
 
-From build script perspective, building Gradle Plugin basically the same as building
-conventional JAR libraries. All additional things are in the `pom.yaml`
+From the perspective of the build script with Jarbird, building Gradle Plugin is the same as building conventional JAR libraries. All additional things are in the `pom.yaml`
 
 Please refer to the `gradleplugin` project in the `jarbirdsamples` GitHub repo.
 
-Note that if we publish Gradle Plugin in old way, that no plugin ID is defined,
-we don't need any special means to publish it. It is just a conventional JAR
-library. In this section we focus on publishing new style Gradle Plugin that
-have plugin ID.
+Note that if we publish Gradle Plugin in the old way, that no plugin ID is defined, we don't need any special means to publish it. It is just a conventional JAR library. In this section, we focus on publishing a new style Gradle Plugin that has a plugin ID.
 
 ## Gradle Portal account
 
@@ -43,25 +37,15 @@ plugin:
     - publish
 ```
 
-From remote repository perspective, a Gradle plugin consists of two
-parts. 
+From the perspective of the remote repository, a Gradle plugin consists of two parts.
 
-One is the JAR library that contains the Gradle plugin code 
-(`jarbirdsamples:gradleplugin:1.0` in this example).
-It is published just like any other JAR libraries. The other part is the
-so-called "Plugin Marker Publication", that relate the plugin ID used in the
-new style `plugins` block in build script, to the JAR library of the plugin itself.
+One is the JAR library that contains the Gradle plugin code(`jarbirdsamples:gradleplugin:1.0` in this example). It is published just like any other JAR libraries. The other part is the so-called "Plugin Marker Publication", which relate the plugin ID used in the new style `plugins` block in the build script, to the JAR library of the plugin itself.
 
-So define the plugin ID as above (`jarbirdsamples.plug`), and the implementation
-class of the plugin (`simplelib.SimplePlugin`). Then we can build the plugin
-as usual with `./gradlew jbPublishToMavenLocal`.
+Define the plugin ID as above (`jarbirdsamples.plugin`), and the implementation class of the plugin (`simplelib.SimplePlugin`). Then we can build the plugin as usual with `./gradlew jbPublishToMavenLocal`.
 
 ## build.gradle
 
-To make it easier to use Gradle Plugin, we usually publish it to Gradle Plugin
-Portal. It is essentially a Maven repository that Gradle use it first to find
-plugin. So we don't need to configure repository in `pluginManagement` of
-`settings.gradle` to make the plugin accessible.
+To make it easier to use Gradle Plugin, we usually publish it to Gradle Plugin Portal. It is essentially a Maven repository that Gradle uses first to find a plugin. So we don't need to configure the repository in `pluginManagement` of `settings.gradle` to make the plugin accessible.
 
 <!--tabs-->
 # build.gradle
@@ -86,19 +70,15 @@ jarbird {
 ```
 <!--/tabs-->
 
-So we can publish the Gradle Plugin to Maven Local or Gradle Portal by
-`jbPublishToMavenLocal` or `jbPublishToGradlePortal` respectively. 
+So we can publish the Gradle Plugin to Maven Local or Gradle Portal by `jbPublishToMavenLocal` or `jbPublishToGradlePortal` respectively.
 
-We can also publish Gradle Plugin to Maven Central by specifying 
-`mavenCentral()` in `pub` block.
+We can also publish Gradle Plugin to Maven Central by specifying `mavenCentral()` in the `pub` block.
 
-If it is published to Maven Local repository, we may inspect the result. Two
-components are published, and they are at:
+If it is published to Maven Local repository, we may inspect the result. Two components are published, and they are at:
 
 - `~/.m2/repository/jarbirdsamples/gradleplugin/1.0`
 - `~/.m2/repository/jarbirdsamples/plugin/jarbirdsamples.plugin.gradle.
-plugin/1.0`
+  plugin/1.0`
 
-The latter is so-called plugin marker publication that is used by Gradle to
-identify plugin by plugin ID. `jarbirdsamples.plugin` is the plugin ID.
+The latter is a so-called plugin marker publication that is used by Gradle to identify plugin by plugin ID. `jarbirdsamples.plugin` is the plugin ID.
 

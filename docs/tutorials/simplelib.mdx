@@ -6,21 +6,20 @@ sidebar_position: 2
 ---
 Let's take a look at the simplest sample project.
 
-The sample project is [here](https://github.com/hkhc/jarbird-samples/tree/master/simplelib).
+The sample project is [here](https://github.com/hkhc/jarbird-samples/tree/master/simplelib). The project contains build scripts in both Groovy and Kotlin. Pick the one you prefer. By default, the Groovy version (`build.script`) is executed. If you want to try the Kotlin version, use the command line with `-c settings.gradle.kts` option.
 
-It is an absolutely minimal Java library that contains a single Java class 
-`samplelib.Hello` that do trivial work. In this minimal example we are going to
-publish it to **Maven Local repository** so that other projects in your computer 
-can make use of it. We don't need any remote credential set up for this example. 
-By default, the Maven Local repository is located at `~/.m2/repository` for Unix/macOS 
-or `C:\Users\{your-username}\.m2\repository` for Windows. We will check our result 
-of publishing there. (To keep description simple, I will use Unix style path form 
-now on, please adapt it for Windows environment).
+```bash
+# use build.script
+$ ./gradlew tasks 
+# use build.script.kts
+$ ./gradlew -c settings.gradle.kts tasks
+```
+
+It is an absolute minimal Java library that contains a single Java class `samplelib.Hello` that do trivial work. In this minimal example, we are going to publish it to **Maven Local repository** so that other projects on your computer can make use of it. We don't need any remote credential set up for this example. By default, the Maven Local repository is located at `~/.m2/repository` for Unix/macOS or `C:\Users\{your-username}\.m2\repository` for Windows. We will check our result of publishing there. (To keep the description simple, I will use the Unix style path from now on, please adapt it for Windows environment).
 
 ## pom.yaml
 
-First we look at the `pom.yaml` file. It is a Jarbird plugin specific file to 
-specify the information about your component.
+First, we look at the `pom.yaml` file. It is a Jarbird plugin-specific file to specify the information about your component.
 
 ```yaml title="pom.yaml"
 group: jarbirdsamples
@@ -28,24 +27,17 @@ artifactId: simplelib
 version: 1.0-SNAPSHOT
 ```
 
-So here is the typical [GAV](https://maven.apache.org/guides/mini/guide-naming-conventions.html) 
-(Group, Artifact ID, Version) coordinate of Java component. In the good old days of building 
-Java library, we put this information in `build.gradle`. The benefit of taking that out of 
-`build.gradle` will be obvious when we work on more sophsicated scenarios. It is also OK to 
-leave this information in `build.gradle`. We can even omit artifactId, then 
-the project name (usually the project directory name) will be the `artifactId`.
+So here is the typical [GAV](https://maven.apache.org/guides/mini/guide-naming-conventions.html) (Group, Artifact ID, Version) coordinate of Java component. In the good old days of building Java library, we put this information in `build.gradle`. The benefit of taking that out of `build.gradle` will be obvious when we work on more sophisticated scenarios. It is also OK to leave this information in `build.gradle`. We can even omit artifactId, then the project name (usually the project directory name) will be the `artifactId`.
 
-Note that the version of our component is suffix with `-SNAPSHOT`, which 
-signifies that the component is a snapshot component. Snapshot components will 
-not be signed, which save us some effort to make our minimal component works.
+Note that the version of our component is suffixed with `-SNAPSHOT`, which signifies that the component is a snapshot component. Snapshot components will not be signed, which save us some effort to make our minimal component works.
 
 ## build.gradle
 
-The next thing is our familiar `build.gradle`. First we have the plugin declaration at the top of file.
+The next thing is our familiar `build.gradle`. First, we have the plugin declaration at the top of the file.
 
 <!--tabs-->
 # build.gradle
-```groovy
+```groovy {3}
 plugins {
     id 'java'
     id 'io.hkhc.jarbird' version '{{jarbirdVersion}}'
@@ -53,7 +45,7 @@ plugins {
 // ...
 ```
 # build.gradle.kts
-```kotlin
+```kotlin {3}
 plugins {
     id("java")
     id("io.hkhc.jarbird") version "{{jarbirdVersion}}"
@@ -62,11 +54,9 @@ plugins {
 ```
 <!--/tabs-->
 
-The Jarbird plugin setups (almost) everything we need to publish components,
-including applying plugins, setup publication definition, createing POM file, etc.
+The Jarbird plugin setups (almost) everything we need to publish components, including applying plugins, setting up publication definition, creating POM file, etc.
 
-The last bit we need is to tell Jarbird plugin that we publish our component 
-to Maven Local repository.
+The last bit we need is to tell the Jarbird plugin that we publish our component to Maven Local repository.
 
 <!--tabs-->
 # build.gradle
@@ -74,7 +64,7 @@ to Maven Local repository.
 // ...
 jarbird {
     pub {
-        mavenLocal()
+        mavenLocal() // see the info block below
     }
 }
 // ...
@@ -84,20 +74,26 @@ jarbird {
 // ...
 jarbird {
     pub {
-        mavenLocal()
+        mavenLocal() // see the info block below
     }
 }
 // ...
 ```
 <!--/tabs-->
 
-All configuration that we tell will be in the `jarbird` extension. This block indicates we have one `pub` (means publication) which will be published to Maven Local repository.
+All configurations that we tell will be in the `jarbird` extension. This block indicates we have one `pub` (means publication) which will be published to Maven Local repository, by the `mavenLocal()` function. By default, the Jarbird plugin configures the `pub` to sign the artefacts before publishing.
 
 That's it!
 
+:::info
+
+The `mavenLocal()` in the `jarbird` extension block is not the same as the `mavenLocal()` that could be specified in `repositories()` block. The latter refers to the repository to resolve (aka download) dependencies, and the former refers to the repository that we publish our artefacts.
+
+:::
+
 ## Run it
 
-Let's take a look at the Gradle tasks provided by Jarbird plugin. In your shell which the current directory is the `simplelib` we are working with. We list the available tasks by:
+Let's take a look at the Gradle tasks provided by the Jarbird plugin. In your shell which the current directory is the `simplelib`, we are working with. We list the available tasks by:
 
 ```shell-session
 $ ./gradlew tasks
@@ -110,14 +106,14 @@ Jarbird publishing tasks
 ------------------------
 jbPublish - Publish
 jbPublishSimplelib - Publish module 'simplelib' to all targeted repositories
-jbPublishSimplelibToMavenLocal - Publish module 'simplelib' to Maven Local repository
-jbPublishToMavenLocal - Publish to Maven Local repository
+jbPublishSimplelibToMavenLocal - Publish module 'simplelib' to Maven Local repository jbPublishToMavenLocal - Publish to Maven Local repository
 ```
 
-All Gradle tasks added by Jarbird plugin are under the group 'Jarbird publishing tasks' and prefixed by 'jb'. So let's publish our component:
+All Gradle tasks added by the Jarbird plugin are under the group 'Jarbird publishing tasks' and prefixed by 'jb'. So let's publish our component:
 
 ```shell-session
 $ ./gradlew jbPublish
+Build with Groovy build script
 
 > Task :jbDokkaHtmlSimplelib
 Initializing plugins
@@ -136,12 +132,10 @@ Transforming pages
 Rendering
 
 
-BUILD SUCCESSFUL in 9s
-9 actionable tasks: 9 executed
-
+BUILD SUCCESSFUL in 10s
 ```
 
-We may ignore the warning at the moment. To check if we have published the component successfully, check the directory `~/.m2/repository/jarbirdsamples/simplelib/1.0-SNAPSHOT`
+We may ignore the warning at the moment. All the execution did are compiling and archive the source code, building a Jar file for source code, generating and building a Jar file for document pages, and publishing them to Maven Local repository. To check if we have published the component successfully, check the directory `~/.m2/repository/jarbirdsamples/simplelib/1.0-SNAPSHOT`
 
 ```shell-session
 $ ls -1 ~/.m2/repository/jarbirdsamples/simplelib/1.0-SNAPSHOT
@@ -153,13 +147,13 @@ simplelib-1.0-SNAPSHOT.module
 simplelib-1.0-SNAPSHOT.pom
 ```
 
-So we have the Jar file itself, archive of source code, archive of javadoc, POM file. Everything we need as a Java component in Maven repository are present (except signatures, that we will come to that shortly).
+So we have the Jar file itself, the archive of source code, the archive of javadoc, POM file. Everything we need as a Java component in the Maven repository is present (except signatures, which we will come to that shortly).
 
 We could use the component in other projects of the same computer, by adding this line to the `build.gradle` of these projects:
 
 <!--tabs-->
 # build.gradle
-```groovy 
+```groovy {6}
 buildscript {
     mavenLocal()
     // ... other repositories
@@ -170,7 +164,7 @@ dependencies {
 }
 ```
 # build.gradle.kts
-```kotlin 
+```kotlin {6}
 buildscript {
     mavenLocal()
     // ... other repositories
@@ -182,4 +176,4 @@ dependencies {
 ```
 <!--/tabs-->
 
-So we have completed our first trial of Jarbird plugin.
+We have completed our first trial of the Jarbird plugin. 

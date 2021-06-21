@@ -6,14 +6,11 @@ sidebar_position: 7
 
 Some setup of properties is needed to make the Jarbird plugin function properly.
 
-Usually we put them in one of the `gradle.properties` files. It is 
-recommended to put them in `~/.gradle/gradle.proeprties` rather than the 
-project's `gradle.properties` so that sensitive information is not in project.
+Usually, we put them in one of the `gradle.properties` files. It is recommended to put them in `~/.gradle/gradle.proeprties` rather than the project's `gradle.properties` so that sensitive information is not in the project.
 
-Jarbird plugin read these properties with Gradle property mechanism, this 
-means we may put the setting in one of the following ways:
+Jarbird plugin read these properties with Gradle property mechanism, this means we may put the setting in one of the following ways:
 
-- Command line option `-P`
+- Command-line option `-P`
 ```
     ./gradlew -Prepository.mavencentral.username=ABC jbPublish
 ```
@@ -31,10 +28,9 @@ means we may put the setting in one of the following ways:
 
 - `gradle.properties` at Gradle home directory (`~/.gradle/garadle.properties`)
 
-- `gradle.properties` at project root directory
+- `gradle.properties` at the project root directory
 
-If a property is set in multiple places, the one at the higher place of the 
-table override the lower one.
+If a property is set in multiple places, the one at the higher place of the table override the lower one.
 
 ## Maven Central <a href="#mavencentral"/>
 
@@ -48,8 +44,7 @@ Publish to Maven Central's Sonatype Server.
 
 ## Custom Maven repository <a href="#custommaven"/>
 
-Publish to custom Maven Server. Replace `[repoId]` by the name of 
-repository defined in `jarbird` configuration block in build script.
+Publish to custom Maven Server. Replace `[repoId]` with the name of repository defined in `jarbird` configuration block in build script.
 
 | Properties | Meaning |
 |:-|:-|
@@ -62,25 +57,24 @@ repository defined in `jarbird` configuration block in build script.
 
 ## Custom Artifactory repository <a href="#artifactory"/>
 
-Publish to custom Maven Sonatype Server. Replace `[repoId]` by the name of
-repository defined in `jarbird` configuration block in build script.
+Publish to custom Maven Sonatype Server. Replace `[repoId]` with the name of the repository defined in the `jarbird` configuration block in the build script.
 
 | Properties | Meaning |
 |:-|:-|
-| `repository.artifactory.[repoId].release` | Publishing URL for released 
+| `repository.artifactory.[repoId].release` | Publishing URL for released
 component |
 | `repository.artifactory.[repoId].snapshot` | Publishing URL for snapshot component |
-| `repository.artifactory.[repoId].repoKey` | Repository key for particular 
+| `repository.artifactory.[repoId].repoKey` | Repository key for particular
 repository in Artifactory server |
-| `repository.artifactory.[repoId].username` | Username to the Artifactory 
+| `repository.artifactory.[repoId].username` | Username to the Artifactory
 server |
 | `repository.artifactory.[repoId].password` | Password to the Maven Central Sonatype server |
 | `repository.artifactory.[repoId].description` | Description of the repository to be shown in `gradle tasks`. Optional |
 
 
-## Artifact signing <a href="#artifactory"/>
+## Artifact signing <a href="#artifactsigning"/>
 
-There are two types of GPG key store. The old style is "Key ring". 
+There are two types of GPG key store. The old style is "Keyring".
 
 | Properties | Meaning |
 |:-|:-|
@@ -88,16 +82,14 @@ There are two types of GPG key store. The old style is "Key ring".
 | `signing.password` | Password to unlock the key ring]
 | `signing.secretKeyRingFile` | Full path to the `secring.gpg` file |
 
-The new style is "key box" file.
+The new style is "keybox" file.
 
 | Properties | Meaning |
 |:-|:-|
 | `signing.gnupg.keyName` | 8-character key name |
 | `signing.gnupg.passphrase` | Passphrase to unlock the keystore |
 
-Jarbird plugin determine automatically which type of key to use. We can also 
-use the `signWithKeybox()` of `pub` block to enforce the use of new keybox 
-format.
+Jarbird plugin determines automatically which type of key to use. We can also use the `signWithKeybox()` of the `pub` block to enforce the use of the new keybox format.
 
 ## Gradle Plugin Portal <a href="#gradleportal"/>
 

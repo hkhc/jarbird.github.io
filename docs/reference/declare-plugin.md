@@ -6,7 +6,7 @@ sidebar_position: 2
 
 ## Declaring the plugin
 
-### Common java/Kotlin projects
+### Common Java/Kotlin projects
 
 In correponding sub-projects:
 
@@ -54,11 +54,9 @@ plugins {
 
 ### Root project
 
-For root project, we use `io.hkhc.jarbird` no matter we have Android
-sub-projects or not.
+For the root project, we use `io.hkhc.jarbird` no matter we have Android sub-projects or not.
 
-Declaring `jarbird` plugin is not strictly needed in root project. It is
-helpful for these cases:
+`jarbird` plugin declaration is not strictly needed in the root project. It is  helpful for these cases:
 
 - Save us from specifying plugin version in every sub-projects.
 - Declare repositories that all sub-projects will use.

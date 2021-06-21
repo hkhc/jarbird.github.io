@@ -4,20 +4,20 @@ tags: main
 sidebar_position: 5
 ---
 
-Here is a complete list of property name and their meaning in `pom.yaml`. The absolute minimal properties are those that represnets [Maven coordinate](https://maven.apache.org/pom.html#Maven_Coordinates). That is, `group`, `artifactId` and `version`. However, individual `pom.yaml` does not needed to have all three, as long as the merged result of multiple files have all these information. If the merged result missed `artifactId`, the project name will be used as default.
+Here is a complete list of property name and their meaning in `pom.yaml`. The absolute minimal properties are those that represent [Maven coordinate](https://maven.apache.org/pom.html#Maven_Coordinates). That is, `group`, `artifactId` and `version`. However, individual `pom.yaml` does not need to have all three, as long as the merged result of multiple files has all this information. If the merged result missed `artifactId`, the project name will be used as default.
 
 | Name           | Meaning                                                      |
 | -------------- | ------------------------------------------------------------ |
-| `variant`        | Optional variant name for the POM fragment. See [POM variant](pom#variant) section of this guide. |
-| `group`        | The group of coordinate of component. Must presents in merged result. |
-| `artifactId`   | The artifact Id of coordinate of component. If it is not specified, the default is the project name. |
-| `version`      | The version of coordinate of component. Must presents in merged result. |
-| `packaging`    | The format of the artifact. Can be, but not limited to, `jar`, `aar`, `war` |
+| [`variant`](pom#variant) | Optional variant name for the POM fragment. See [POM variant](pom#variant) section of this guide. |
+| `group`        | The group of the coordinate of the component. Must present in merged result. |
+| `artifactId`   | The artefact Id of coordinate of the component. If it is not specified, the default is the project name. |
+| `version`      | The version of the coordinate of the component. Must present in merged result. |
+| `packaging`    | The format of the artefact. Can be, but not limited to, `jar`, `aar`, `war`. |
 | [`licenses`](#licenses)     | A collection of licenses                                     |
 | [`developers`](#developers)  | A collection of developers                                   |
 | [`contributors`](#contributors) | A collection of contributors                                 |
-| [`organization`](#organization) | The organization that the component belong to.               |
-| [`web`](#web)          | The web site for the component.                              |
+| [`organization`](#organization) | The organization that the component belongs to.               |
+| [`web`](#web)          | The website for the component.                              |
 | [`scm`](#scm)          | The version control system for the component.                |
 | [`plugin`](#plugin)       | Definition of Gradle plugin publishing                       |
 
@@ -29,7 +29,7 @@ licenses:
   dist: repo
 ```
 
-The `url` field will be filled automatically by the plugin with value `http://www.apache.org/licenses/LICENSE-2.0.txt`.
+The `url` field will be filled automatically by the plugin with the value `http://www.apache.org/licenses/LICENSE-2.0.txt`.
 
 Predefined license types included:
 
@@ -46,7 +46,7 @@ Predefined license types included:
 | `dist`    | `repo` or `manual`                 |
 | `comment` | Additional comment to the license. |
 
-See [this](https://maven.apache.org/pom.html#licenses) for full description of the block.
+See [this](https://maven.apache.org/pom.html#licenses) for a full description of the block.
 
 ## `developers` <a href="#developers"/>
 
@@ -54,16 +54,16 @@ See [this](https://maven.apache.org/pom.html#licenses) for full description of t
 
 | Name           | Meaning                                                      |
 | -------------- | ------------------------------------------------------------ |
-| `id`           | ID of the developer. It is an arbitrary ID that help organizing people in an organization. |
+| `id`           | ID of the developer. It is an arbitrary ID that helps to organize people in an organization. |
 | `name`         | Name of the person.                                          |
 | `email`        | Email address of the person.                                 |
-| `Organization` | The organization that the person belong to.                  |
-| `timeZOne`     | The time zone that the person is in.                         |
-| `url`          | URL of informaticon about the person.                        |
+| `organization` | The organization that the person belongs to.                  |
+| `timeZone`     | The time zone that the person is in.                         |
+| `url`          | URL of information about the person.                        |
 
 ## `contributors` <a href="#contributors"/>
 
-A collection of person that contributed to the project. The format is identicial with `developers` block.
+A collection of person that contributed to the project. The format is identical to the `developers` block.
 
 ## `organization` <a href="#organization"/>
 
@@ -77,11 +77,11 @@ A collection of person that contributed to the project. The format is identicial
 | Name                  | Meaning                                                      |
 | --------------------- | ------------------------------------------------------------ |
 | `url`                 | URL to the source code control system. If `repoType` and `repoName` is given. This field is automatically filled as `https://{repoType}/{repoName}` |
-| `connection`          | The string to identify the project in source code control system. The format depends on the repoType. It is usually a URL to the source code repository. Normally access to the repository pointed by this value is readonly. |
+| `connection`          | The string to identify the project in the source code control system. The format depends on the `repoType`. It is usually a URL to the source code repository. Normally access to the repository pointed by this value is read-only. |
 | `developerConnection` | Similar to `connection`, but specify the repository that requires write access. |
 | `repoType`            | Usually the domain name of the service, like `github.com`, `gitlab.com` |
-| `repoName`            | Usually the path after `repoType` which represents the user account and repository name of the source code control system. For example, `hkhc/jarbird`. |
-| `issueType`           | The type of issue management system. It could be the same as `repoType` for case like `github.com`. |
+| `repoName`            | Usually the path after `repoType` represents the user account and repository name of the source code control system. For example, `hkhc/jarbird`. |
+| `issueType`           | The type of issue management system. It could be the same as `repoType` for cases like `github.com`. |
 | `issueUrl`            | URL to the issue management system for this component.       |
 | `tag`                 | Further information about the component in the source code management system. |
 
@@ -90,17 +90,17 @@ A collection of person that contributed to the project. The format is identicial
 | Name          | Meaning                               |
 | ------------- | ------------------------------------- |
 | `url`         | URL to the website of this component. |
-| `description` | Description of the web site.          |
+| `description` | Description of the website.          |
 
 ## `plugin` <a href="#plugin"/>
 
-`plugin` block is only needs to publish Gradle plugin.
+`plugin` block is only needed to publish the Gradle plugin.
 
 | Name                  | Meaning                                                      |
 | --------------------- | ------------------------------------------------------------ |
-| `id`                  | Plugin ID used to declare the use of plugin.                 |
-| `displayName`         | The name of plugin to be shown in Gradle Plugin Portal.      |
-| `description`         | Description of the pligin.                                   |
+| `id`                  | Plugin ID used to declare the use of the plugin.                 |
+| `displayName`         | The name of the plugin to be shown in Gradle Plugin Portal.      |
+| `description`         | Description of the plugin.                                   |
 | `implementationClass` | The fully qualified class name                               |
 | `tags`                | Multiple values of tag string to be sent to Gradle Plugin Portal. |
 

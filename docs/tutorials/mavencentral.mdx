@@ -4,22 +4,20 @@ tags: tutorial
 sidebar_label: Publish to Maven Central
 sidebar_position: 4
 ---
-In this tutorial we will go through the process of publishing to Maven Central.
+In this tutorial, we will go through the process of publishing to Maven Central.
 
-The sample project is [here](https://github.
-com/hkhc/jarbird-samples/tree/master/mavencentral).
+The sample project is [here](https://github.com/hkhc/jarbird-samples/tree/master/mavencentral).
 
-We need the following before we can publish component to Maven Central.
+We need the following before we can publish components to Maven Central.
 
 - JIRA account for Sonatype OSSRH (OSS Repository Hosting)
 - Claim your namespace on Maven Central repository
 
 Refer to [official documentation](https://central.sonatype.org/publish/publish-guide/#initial-setup) of OSSRH to set up the above.
 
-If your project is hosted at GitHub, and use `io.github.[user]` or `com.github.[user]` 
-as group name, then you don't need to claim your namespace.
+If your project is hosted at GitHub, and use `io.github.[user]` or `com.github.[user]` as group name, then you don't need to claim your namespace.
 
-Again they are one off things, If you have done that you may go ahead.
+Again they are one-off things, If you have done that you may go ahead.
 
 ## Project setup
 
@@ -35,13 +33,9 @@ repository.mavencentral.newUser=false
 # ...
 ```
 
-Note the `newUser` line. Maven Central use different servers to publish and
-manage publication depends on whether the account is 'new' account. If the
-account is registered before Feb 2021, it is 'old' account.
+Note the `newUser` line. Maven Central use different servers to publish and manage publication depends on whether the account is a 'new' account. If the account is registered before Feb 2021, it is an 'old' account.
 
-Jarbird adjust the URL to publish components according to the `newUser` flag.
-Default is `true`.
-
+Jarbird adjusts the URL to publish components according to the `newUser` flag. Default is `true`.
 
 ### build.gradle
 
@@ -49,7 +43,7 @@ Tell Jarbird plugin that we want to publish to Maven Central.
 
 <!--tabs-->
 # build.gradle
-```groovy {5}
+```groovy {4}
 // ...
 jarbird {
     pub {
@@ -59,7 +53,7 @@ jarbird {
 // ...
 ```
 # build.gradle.kts
-```kotlin {5}
+```kotlin {4}
 // ...
 jarbird {
     pub {
@@ -70,20 +64,16 @@ jarbird {
 ```
 <!--/tabs-->
 
-`mavenLocal()` can be omitted if you are not going to publish to Maven Local repository.
-
 ### pom.yaml
 
-It is required to provide sufficient information about the component before it is 
-approved to be published. This information includes:
+It is required to provide sufficient information about the component before it is approved to be published. This information includes:
 
 - The proper GAV coordinate.
 - Description
-- URL that host the source code
+- URL that hosts the source code
 - Developer's information.
 
-Refer to Sonatype [page](https://central.sonatype.org/pages/requirements.html#sufficient-metadata) 
-for detail requirements of POM to publish component to Maven Central.
+Refer to Sonatype [page](https://central.sonatype.org/pages/requirements.html#sufficient-metadata) for detailed requirements of POM to publish component to Maven Central.
 
 Jarbird get all of those at the `pom.yaml` file:
 
@@ -108,9 +98,9 @@ scm:
 
 ```
 
-See TODO for more details about the content of `pom.yaml`.
+See [reference](../reference/pom) for more details about the content of `pom.yaml`.
 
-Jarbird plugin read the file and create proper POM file for publishing automatically.
+Jarbird plugin read the file and create a proper POM file for publishing automatically.
 
 With this setup, we can see more tasks available with `./gradlew tasks`
 
@@ -118,19 +108,15 @@ With this setup, we can see more tasks available with `./gradlew tasks`
 Jarbird publishing tasks
 ------------------------
 jbPublish - Publish
-jbPublishMavendemo - Publish module 'mavendemo' to all targeted repositories
-jbPublishMavendemoToMavenCentral - Publish module 'mavendemo' to Maven Central
-jbPublishMavendemoToMavenLocal - Publish module 'mavendemo' to Maven Local repository
-jbPublishMavendemoToMavenRepository - Publish module 'mavendemo' to all Maven repositories
+jbPublishMavencentraldemo - Publish module 'mavencentraldemo' to all targeted repositories
+jbPublishMavencentraldemoToMavenCentral - Publish module 'mavencentraldemo' to Maven Central
+jbPublishMavencentraldemoToMavenLocal - Publish module 'mavencentraldemo' to Maven Local repository
+jbPublishMavencentraldemoToMavenRepositories - Publish module 'mavencentraldemo' to all Maven repositories
 jbPublishToMavenCentral - Publish to Maven Central
 jbPublishToMavenLocal - Publish to Maven Local repository
-jbPublishToMavenRepository - Publish to all Maven repositories
+jbPublishToMavenRepositories - Publish to all Maven repositories
 ```
 
-The task `jbPublish` publishes component to all specified repositories,
-which is MavenLocal and MavenCentral for this sample.
-We may use `jbPublishToMavenCentral`  to publish our component to Maven Central
-repository only.
+The task `jbPublish` publishes component to all specified repositories, which is MavenLocal and MavenCentral for this sample. We may use `jbPublishToMavenCentral`  to publish our component to the Maven Central repository only.
 
-After published the component to Maven Central successfully,
-we need to release the component manually at OSSRH website.
+After published the component to Maven Central successfully, we need to [release](https://central.sonatype.org/publish/publish-guide/#releasing-to-central) the component manually at the OSSRH website.

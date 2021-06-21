@@ -5,12 +5,13 @@ sidebar_label: Limitations
 sidebar_position: 8
 ---
 
-There are some special limitations to specific type of repositories
+There are some special limitations to specific types of repositories.
 
 ## Artifactory
 
-- In one project or sub-project, we can have one artifactory server setting 
-  only. 
-- In one project or sub-project, we cannot have multiple pub that mix 
-  snapshot and release version. Either all of them are release or all of 
-  them are in snapshot.   
+- In one project or sub-project, we can have one artifactory server setting only.
+
+## Gradle Plugin Portal
+
+- When publishing multiple Gradle plugins within one projects, some POM information will be obtained from the POM of the first `pub` in the project.
+  

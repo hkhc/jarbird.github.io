@@ -110,7 +110,7 @@ module.exports = {
           remarkPlugins: [
             [require(path.resolve(__dirname, './src/remarkPlugins/hkhc-remake-variables')), {
               dict: {
-                'jarbirdVersion': '0.6.0'
+                'jarbirdVersion': '0.7.0'
               }
             }],
             require('remark-docusaurus-tabs')

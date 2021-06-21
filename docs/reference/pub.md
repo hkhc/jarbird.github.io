@@ -4,14 +4,9 @@ tags: main
 sidebar_position: 6
 ---
 
-In terms of Jarbird plugin, "pub" refers to a unit of publication. It 
-usually means publishing a JAR artifact together with related items like 
-source code archive, javadoc archive, POM file, and their signatures. For 
-Gradle plugin publishing, a pub also involves publishing a pseudo component 
-that contains the plugin ID. 
+In terms of the Jarbird plugin, "pub" refers to a unit of publication. It usually means publishing a JAR artefact together with related items like source code archive, javadoc archive, POM file, and their signatures. For Gradle plugin publishing, a pub also involves publishing a pseudo component that contains the plugin ID.
 
-A pub also describes the remote reposioties it targets. One pub may be 
-published to multiple, heterogenous types of remote repositories.
+A pub also describes the remote repositories it targets. One pub maybe published to one or multiple, heterogenous types of remote repositories.
 
 In build script, we declare a pub in the `jarbird` block:
 
@@ -30,24 +25,69 @@ jarbird {
 ```
 <!--/tabs-->
 
-This tell the Jarbird plugin that we are going to publish the artifacts build 
-by this project. It will also set up the tasks for archiving source code, 
-generating javadoc and archive it, and signing all of them. It generates
-tasks to publish all of these to Maven local repository.
+This tells the Jarbird plugin that we are going to publish the artefacts built by this project. It will also set up the tasks for archiving source code, generating javadoc and archive it, and signing all of them. It generates tasks to publish all of these to Maven local repository.
 
-So we can run the plugin task by 
+So we can run the plugin task by
 
 ```
 ./gradlew jbPUblishToMavneLocal
 ```
-
-or simply 
+or simply
 
 ```
 ./gradlew jbPublish
 ```
 
-which publishs everything to everywhere declared.
+which publishes everything to everywhere declared.
+
+## pub with variant
+
+In case there are multiple variants of POM information in pom.yaml, we link the pub with pom.yaml by providing a variant name. For example, in an Android project we have `pom.yaml` like this:
+
+```yaml title="pom.yaml"
+variant: debug
+artifactId: simpleaar-staging
+---
+variant: release
+artifactId: simpleaar-production
+---
+group: jarbirdsamples
+version: 1.0
+packaging: aar
+
+# ....
+```
+
+Then we may declare the `pub`s like this:
+
+<!--tabs-->
+# build.gradle
+```groovy title="build.gradle" {4}
+// variant.name can be "debug" or "release"
+android.libraryVariants.configureEach { variant -> 
+    jarbird {
+        pub(variant.name) {
+            mavenCentral()
+            from(variant)
+        }
+    }
+}
+```
+# build.gradle.kts
+```kotlin title="build.gradle.kts" {4}
+// variant.name can be "debug" or "release"
+android.libraryVariants.configureEach {
+    jarbird {
+        pub(name) {
+            mavenCentral()
+            from(this@configureEach)
+        }
+    }
+}
+```
+<!--/tabs-->
+
+Then the Jarbird plugin knows the association of a particular `pub` and a variant of POM.
 
 ## Repositories
 
@@ -55,22 +95,463 @@ We can define one or more repositories for each pub. Each of them is in the form
 
 | Repository | Meaning |
 |:-|:-|
-|`mavenLocal()` | Maven local repository. It is included implicitly, so we don't need to specift this explicitly. |
+|`mavenLocal()` | Maven local repository. It is included implicitly, so we don't need to specify this explicitly. |
 | [`mavenCentral()`](properties-ref#mavencentral) | Maven Central |
-| [`mavenRepo(repo)`](properties-ref#custommaven) | Custom Maven repository. `repo` is a string that representation the repository. It is used to match the setting of repository in `gradle.properties` |
+| [`mavenRepo(repo)`](properties-ref#custommaven) | Custom Maven repository. `repo` is a string that represents the repository. It is used to match the setting of the repository in `gradle.properties` |
 | [`gradlePortal()`](properties-ref#gradleportal)| Gradle Plugin Portal |
-| [`artifactory()`](properties-ref#artifactory) | Artifactory |
+| [`artifactory(repo)`](properties-ref#artifactory) | Artifactory repository.`repo` is a string that representation the repository. It is used to match the setting of a repository in `gradle.properties` |
 
-## plugin level setting, project level setting, pub level setting
+## Extension level setting, pub level setting
+
+We may customize how a pub is published by adding directives to the `pub` block or `jarbird` block. `pub` inherit all directives declared in the `jarbird` extension block of the same project and the parent projects.
+
+For example,
+
+<!--tabs-->
+# build.gradle
+```groovy title="build.gradle"
+jarbird {
+    pub {
+        mavenCentral()
+    }
+}
+```
+# build.gradle.kts
+```kotlin title="build.gradle.kts"
+jarbird {
+    pub {
+        mavenCentral()
+    }
+}
+```
+<!--/tabs-->
+
+declare a repository for the pub. On the other hand, the declation :
+
+<!--tabs-->
+# build.gradle
+```groovy title="build.gradle"
+jarbird {
+    mavenCentral()
+    pub {
+        sourceSetNames("main")
+    }
+    pub {
+        sourceSetNames("qa")
+    }
+}
+```
+# build.gradle.kts
+```kotlin title="build.gradle.kts"
+jarbird {
+    mavenCentral()
+    pub {
+        sourceSetNames("main")
+    }
+    pub {
+        sourceSetNames("qa")
+    }
+}
+```
+<!--/tabs-->
+
+make `mavenCentral()` available to both `pub` in the extension block.
+
+We can even put the directives at the root project so that all sub-projects inherit them.
+
+<!--tabs-->
+# build.gradle
+```groovy title="root project build.gradle"
+jarbird {
+    mavenCentral()
+}
+```
+# build.gradle.kts
+```kotlin title="root project build.gradle.kts"
+jarbird {
+    mavenCentral()
+}
+```
+<!--/tabs-->
+
+:::info
+Note that `pub`s themselves are not inherited. The pub declared in root project is not available in sub-projects.
+:::
+
+## Signing <a href="#signing"></a>
+
+By default, the Jarbird plugin attempts to set up artefact signing for each pub. However, no signing is performed for a pub with a version suffixed by `-SNAPSHOT'.
+
+We can disable signing explicitly by using `doNotSign()` in pub or jarbird block.
+
+Signing needs a key pair. The key pair is generated by GnuPG. Two formats of key stores of GnuPG are available.
+
+- GnuPG version 2.1 or before use keyring format.
+- GnuPG version 2.2 or after use key box format.
+
+They need different [settings](properties-ref#artifactsigning) in `gradle.properties`.
+
+We can specify which key format to use by using the following directives:
+
+- `signWithKeybox()` : use keybox to access key pair
+- `signWithKeyring()` : use keyring to access key pair
+
+If we specify one type of key store, and the Jarbird plugin detects that only another type of key store setting is available in `gradle.properties`, a warning will be shown, and the key store type will be determined by the
+[settings](properties-ref#artifactsigning) in `gradle.properties`.
+
+## Source set specification
+
+Normally, Jarbird determines automatically the code to be built as a library. It also tries to figure out the source code directory to build documentation.
+
+### JAR project
+
+Normally we don't need to do anything special in `pub {}` declaration. Jarbird plugin will look for `project.component["java"]` for artifacts built and use the `JavaPluginConvention` class to determine the source sets for documentation.
+
+We may provide alternate component by
+
+<!--tabs-->
+# build.gradle
+```groovy title="root project build.gradle"
+jarbird {
+    pub {
+        from(components.custom)
+    }
+}
+```
+# build.gradle.kts
+```kotlin title="root project build.gradle.kts"
+jarbird {
+    pub {
+        from(components["custom"])
+    }
+}
+```
+<!--/tabs-->
+
+See [Android](#androidaar) section for more details on using `components`with Android project.
+
+In case we want to publish two components in single project, we may also specify code to publish by `SourceSet`:
+
+<!--tabs-->
+# build.gradle
+```groovy title="root project build.gradle"
+sourceSet {
+    // implicitly the new source set will be at src/altSourceSet1 directory
+    altSourceSet1 { }
+    // implicitly the new source set will be at src/altSourceSet2 directory
+    altSourceSet2 { }
+}
+
+jarbird {
+    pub("pub1") {
+        from(project.sourceSets.altSourceSet1) // link to sourceSet        
+    }
+    pub("pub2") {
+        from(project.sourceSets.altSourceSet2) // link to sourceSet        
+    }
+}
+```
+# build.gradle.kts
+```kotlin title="root project build.gradle.kts"
+sourceSet {
+    // implicitly the new source set will be at src/altSourceSet1 directory
+    create("altSourceSet1") { }
+    }
+    // implicitly the new source set will be at src/altSourceSet2 directory
+    create("altSourceSet2") { }
+}
+
+jarbird {
+    pub("pub1") {
+        from(project.sourceSets["altSourceSet1"])        
+    }
+    pub("pub2") {
+        from(project.sourceSets["altSourceSet2"])        
+    }
+}
+```
+<!--/tabs-->
+
+Library compilation and document generation will be based on the source set specified in the `pub` block.
+
+### Android AAR project<a href="#androidaar"></a>
+
+Android AAR projects come with variants. We have a component instance for each of the variant of the Android project. So the following declaration can succeed.
+
+<!--tabs-->
+# build.gradle
+```groovy title="build.gradle" {4}
+// variant.name can typically be "debug" or "release"
+android.libraryVariants.configureEach { variant -> 
+    jarbird {
+        pub(variant.name) {
+            mavenCentral()
+            from(components[variant])
+        }
+    }
+}
+```
+# build.gradle.kts
+```kotlin title="build.gradle.kts" {4}
+// variant.name can be typically "debug" or "release"
+android.libraryVariants.configureEach {
+    jarbird {
+        pub(name) {
+            mavenCentral()
+            from(components[name])
+        }
+    }
+}
+```
+<!--/tabs-->
+
+However, the source set of Android project is resolved in a different way than the usual JAR project. So it will fail to generate proper documentation.
+
+The proper way to declare `pub` for an Android project is to use the `jarbird-android` plugin and provide a `LibraryVariant` instance to `from()` method
+
+<!--tabs-->
+# build.gradle
+```groovy title="build.gradle" {4}
+plugin {
+    id 'io.hkhc.jarbird-android' version '{{jarbirdVersion}}' 
+}
+
+// variant.name can be "debug" or "release"
+android.libraryVariants.configureEach { variant -> 
+    jarbird {
+        pub(variant.name) {
+            mavenCentral()
+            from(variant)
+        }
+    }
+}
+```
+# build.gradle.kts
+```kotlin title="build.gradle.kts" {4}
+plugin {
+    id("io.hkhc.jarbird-android") version "{{jarbirdVersion}}"    
+}
+
+// variant.name can be "debug" or "release"
+android.libraryVariants.configureEach {
+    jarbird {
+        pub(name) {
+            mavenCentral()
+            from(this@configureEach)
+        }
+    }
+}
+```
+<!--/tabs-->
+
+Then source set can be resolved correctly. It works even when our build type/flavour combination of Android project uses multiple source folders to build the project.
+
+### Gradle plugin project
+
+There is no special syntax for `pub` syntax to publish the Gradle plugin. We can publish multiple Gradle plugins in one project, each of them is specified in a `pub` block, linked to different variants of `pom.yaml`.
+
+However, there is one limitation. We can have only one set of meta-information like website, scm information, etc. If there are multiple `pub`s for Gradle plugin publishing, these pieces of information are picked from the first `pub` for Gradle plugin publishing. This limitation does not apply to normal JAR projects.
+
+## Variant augmented coordinate
+
+When we publish multiple `pub`s in one project, the GAV coordinate of components build with these `pub`s can be blended with the variant, so that we can publish distinguish components to repositories. There are three ways we combine the GAV as specified in `pom.yaml` with the variant.
+
+### Variant with version
+
+Consider the jarbird declaration and POM in a project:
+
+<!--tabs-->
+# build.gradle
+```groovy 
+jarbird {
+    mavenCentral()
+    pub("qa") {
+        from(sourceSets.qa)
+    }
+    pub("release") {
+        from(sourceSets.main)
+    }
+}
+```
+# build.gradle.kts
+```kotlin
+jarbird {
+    mavenCentral()
+    pub("qa") {
+        from(sourceSets.qa)
+    }
+    pub("release") {
+        from(sourceSets.main)
+    }
+}
+```
+<!--/tabs-->
 
 
+```yaml title="pom.yaml"
+group: mygroup
+artifactId: mylib
+version: 1.0
+```
 
-## signing
+As a result, we publish two components with coordinates:
+- `mygroup:mylib:1.0-qa`
+- `mygroup:mylib:1.0-release`
 
-## source set specification
+This is the default behaviour. If we prefer it to be stated explicitly, we add `variantWithVersion()` :
 
-## pub with variant
+<!--tabs-->
+# build.gradle
+```groovy {3}
+jarbird {
+    mavenCentral()
+    variantWithVersion()
+    pub("qa") {
+        from(sourceSets.qa)
+    }
+    pub("release") {
+        from(sourceSets.main)
+    }
+}
+```
+# build.gradle.kts
+```kotlin {3}
+jarbird {
+    mavenCentral()
+    variantWithVersion()
+    pub("qa") {
+        from(sourceSets.qa)
+    }
+    pub("release") {
+        from(sourceSets.main)
+    }
+}
+```
+<!--/tabs-->
 
-## variant augmented coordinate
+Just like the repositories declaration, it can be in `pub` block, `jarbird` block in current project or parent project. and `pub` get inherited settings from `jarbird` blocks of the current project and all ancestor projects.
 
-## get pub information
+### Variant with artefact ID
+
+Suffixing version with variant may not be the best option for some situations. We may opt to combine variant with artifact ID :
+
+<!--tabs-->
+# build.gradle
+```groovy {3}
+jarbird {
+    mavenCentral()
+    variantWithArtifactID()
+    pub("qa") {
+        from(sourceSets.qa)
+    }
+    pub("release") {
+        from(sourceSets.main)
+    }
+}
+```
+# build.gradle.kts
+```kotlin {3}
+jarbird {
+    mavenCentral()
+    variantWithArtifactID()
+    pub("qa") {
+        from(sourceSets.qa)
+    }
+    pub("release") {
+        from(sourceSets.main)
+    }
+}
+```
+<!--/tabs-->
+
+
+Then the components to be published become:
+
+- `mygroup:mylib-qa:1.0`
+- `mygroup:mylib-release:1.0`
+
+### Make variant invisible and gain full control of coordinates
+
+When automatic blending of coordinates are too restrictive and we want to take back full control of it. We may make the variant invisible in coordinates:
+
+<!--tabs-->
+# build.gradle
+```groovy {3}
+jarbird {
+    mavenCentral()
+    variantInvisible()
+    pub("qa") {
+        from(sourceSets.qa)
+    }
+    pub("release") {
+        from(sourceSets.main)
+    }
+}
+```
+# build.gradle.kts
+```kotlin {3}
+jarbird {
+    mavenCentral()
+    variantInvisible()
+    pub("qa") {
+        from(sourceSets.qa)
+    }
+    pub("release") {
+        from(sourceSets.main)
+    }
+}
+```
+<!--/tabs-->
+
+```yaml title="pom.yaml"
+---
+variant: qa
+group: mygroup.qa
+artifactId: mylib.qa
+---
+variant: main
+group: mygroup.release
+artifactId: mylib.release
+---
+version: 1.0
+```
+
+We use `variantInvisible()` to disable the automatic blending variant to coordinates. Then we have multiple fragments of `pom.yaml` to specify the coordinates for each of the variants. Then the result becomes:
+
+- `mygroup.qa:mylib.qa:1.0`
+- `mygroup.release:mylib.release:1.0`
+
+## Dokka configuration
+
+The Jarbird plugin configures the Dokka documentation engine to get proper source code and classpath based on the `jarbird` block configuration. But sometimes we still want to perform customisation to the Dokka configuration like the title, layout, links to external documentation pages, etc.
+
+We may inject the Dokka configuration in `jarbird` block. For example, to add hyperlink to the references of the Java standard library :
+
+<!--tabs-->
+# build.gradle
+```groovy
+jarbird {
+    mavenCentral()
+    dokkaConfig {
+        dokkaSourceSets.forEach {
+            it.externalDocumentationLink("https://docs.gradle.org/current/javadoc/")
+        }
+    }
+    pub { }
+}
+```
+# build.gradle.kts
+```kotlin
+jarbird {
+    mavenCentral()
+    dokkaConfig {
+        dokkaSourceSets.forEach {
+            it.externalDocumentationLink("https://docs.gradle.org/current/javadoc/")
+        }
+    }
+    pub { }
+}
+```
+<!--/tabs-->
+
+The `dokkaConfig` block provides a reference to `DokkaTask`. It has been configured with proper `dokkaSourceSets` block with `classpath` and `sourceRoot` arguments. we can do further customisation in the `dokkaConfig` block.
